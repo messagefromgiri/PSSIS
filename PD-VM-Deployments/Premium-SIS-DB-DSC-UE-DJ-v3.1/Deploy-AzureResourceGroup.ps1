@@ -55,8 +55,8 @@ foreach($AzureVMName in $AzureVMNames){
             $OptionalParameters['pIPAddress'] = Powershell -file ..\..\Scripts\Set-IPAllocator.ps1 -Path ..\..\Scripts\SIS-DB-SN002-172.21.72.0_21.csv -HostName ($AzureVMName+"-Nic")
             $OptionalParameters['sIPAddress'] = Powershell -file ..\..\Scripts\Set-IPAllocator.ps1 -Path ..\..\Scripts\SIS-DB-SN002-172.21.72.0_21.csv -HostName ($AzureVMName+"-BNic")
 
-            #$OptionalParameters['pIPAddress'] = "172.21.72.18"
-            #$OptionalParameters['sIPAddress'] = "172.21.72.19"
+            #$OptionalParameters['pIPAddress'] = "172.21.72.8"
+            #$OptionalParameters['sIPAddress'] = "172.21.72.9"
 
             #endregion
 
