@@ -278,20 +278,21 @@ Node $nodeName
             $acctKey = ConvertTo-SecureString -String "pj+7mV4N0Wjufm4Vf/dBbaY0fHnXqh6IoWMgF4w75YwGKimYh4CUBvwdjjLqgRy1ZEcr7igleta3qy9WK+XOoQ==" -AsPlainText -Force
             $credential = New-Object System.Management.Automation.PSCredential -ArgumentList "Azure\sispd00sragrssa003", $acctKey
             New-PSDrive -Name Z -PSProvider FileSystem -Root "\\sispd00sragrssa003.file.core.windows.net\pssis" -Credential $credential -Persist
-                                              
-                    msiexec /i Z:\NEWRELIC\newrelic-infra.msi /L*v install.log /qn
+			Start-Sleep -Seconds 10
+                    New-Item -Path D:\ -ItemType Directory -Name NEWRELIC -ErrorAction SilentlyContinue
 
-                    Start-Sleep -Seconds 180
+					Copy-Item -Path Z:\NEWRELIC\newrelic-infra.msi -Destination D:\NEWRELIC\newrelic-infra.msi -Force -Verbose
 
-                    Rename-Item -Path 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.yml' -NewName 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.txt'
-
-                    "license_key: aa3c1a32f97de2f370e8813575a5f660d2b3f26b" > 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.txt'
-
-                    Rename-Item -NewName 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.yml' -Path 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.txt'
-
-			        Start-Service -Name newrelic-infra -ErrorAction Ignore
+                    msiexec /i D:\NEWRELIC\newrelic-infra.msi /L*v install.log /qn
+                    
+					Start-Sleep -Seconds 240
+			
+					Rename-Item -Path 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.yml' -NewName 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.txt'
+					"license_key: aa3c1a32f97de2f370e8813575a5f660d2b3f26b" > 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.txt'
+					Rename-Item -NewName 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.yml' -Path 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.txt'														
+					Start-Service -Name newrelic-infra -ErrorAction Ignore
             
-                Remove-PSDrive -Name Z
+                 Remove-PSDrive -Name Z
 		}
 		DependsOn = '[Script]DiskRenaming'
 	}

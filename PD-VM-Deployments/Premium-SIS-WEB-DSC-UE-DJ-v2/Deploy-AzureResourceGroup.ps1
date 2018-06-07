@@ -19,6 +19,9 @@ Param(
     [string[]] $AzureVMNames,
     [switch] $ValidateOnly = $false
 )
+CD $PSScriptRoot
+Import-Module '..\..\Scripts\AzureImageFunctions.psm1'
+Get-AzureLoginCheck -Subscription $SubscriptionName
 
 foreach($AzureVMName in $AzureVMNames){
                 try {
@@ -28,6 +31,8 @@ foreach($AzureVMName in $AzureVMNames){
                 $ErrorActionPreference = 'Stop'
                 Set-StrictMode -Version 3
                 Select-AzureRmSubscription -Subscription $SubscriptionName
+                
+                
                 function Format-ValidationOutput {
                     param ($ValidationOutput, [int] $Depth = 0)
                     Set-StrictMode -Off
@@ -52,11 +57,11 @@ foreach($AzureVMName in $AzureVMNames){
                 $OptionalParameters['domainPassword'] = (Get-AzureKeyVaultSecret -VaultName 'PS-EXT-PD-SNGL-KV01' -Name 'ServiceAdminCred').SecretValue
                 $OptionalParameters['adminPassword'] = (Get-AzureKeyVaultSecret -VaultName 'PS-EXT-PD-SNGL-KV01' -Name '00SISPDAPPWXXX').SecretValue
 
-                $OptionalParameters['pIPAddress'] = Powershell -file ..\..\Scripts\Set-IPAllocator.ps1 -Path ..\..\Scripts\SIS-WB-SN001-172.21.64.0_22.csv -HostName ($AzureVMName+"-Nic")
-                $OptionalParameters['sIPAddress'] = Powershell -file ..\..\Scripts\Set-IPAllocator.ps1 -Path ..\..\Scripts\SIS-WB-SN001-172.21.64.0_22.csv -HostName ($AzureVMName+"-BNic")
+                #$OptionalParameters['pIPAddress'] = Powershell -file ..\..\Scripts\Set-IPAllocator.ps1 -Path ..\..\Scripts\SIS-WB-SN001-172.21.64.0_22.csv -HostName ($AzureVMName+"-Nic")
+                #$OptionalParameters['sIPAddress'] = Powershell -file ..\..\Scripts\Set-IPAllocator.ps1 -Path ..\..\Scripts\SIS-WB-SN001-172.21.64.0_22.csv -HostName ($AzureVMName+"-BNic")
 
-                #$OptionalParameters['pIPAddress'] = "172.21.64.11"
-                #$OptionalParameters['sIPAddress'] = "172.21.64.12"
+                $OptionalParameters['pIPAddress'] = "172.21.64.23"
+                $OptionalParameters['sIPAddress'] = "172.21.64.24"
 
                 #endregion
 
