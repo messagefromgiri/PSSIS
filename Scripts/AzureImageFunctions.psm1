@@ -38,7 +38,7 @@ Function Get-AzureLoginCheck
         {
             Write-Host "Looks like you've not logged in" -BackgroundColor Magenta
             Login-AzureRmAccount
-            Get-AzureLoginCheck
+            Get-AzureLoginCheck -Subscription $Subscription
         }
     }
     elseif($Subscription -ne $null){
