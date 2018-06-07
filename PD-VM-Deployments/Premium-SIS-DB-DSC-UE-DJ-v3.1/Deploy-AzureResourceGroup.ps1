@@ -19,6 +19,9 @@ Param(
     [string[]] $AzureVMNames,
     [switch] $ValidateOnly = $false
 )
+CD $PSScriptRoot
+Import-Module '..\..\Scripts\AzureImageFunctions.psm1'
+Get-AzureLoginCheck -Subscription $SubscriptionName
 
 foreach($AzureVMName in $AzureVMNames){
             try {
@@ -28,7 +31,7 @@ foreach($AzureVMName in $AzureVMNames){
             $ErrorActionPreference = 'Stop'
             Set-StrictMode -Version 3
             Select-AzureRmSubscription -Subscription $SubscriptionName
-            CD $PSScriptRoot
+
             function Format-ValidationOutput {
                 param ($ValidationOutput, [int] $Depth = 0)
                 Set-StrictMode -Off
@@ -55,8 +58,8 @@ foreach($AzureVMName in $AzureVMNames){
             $OptionalParameters['pIPAddress'] = Powershell -file ..\..\Scripts\Set-IPAllocator.ps1 -Path ..\..\Scripts\SIS-DB-SN002-172.21.72.0_21.csv -HostName ($AzureVMName+"-Nic")
             $OptionalParameters['sIPAddress'] = Powershell -file ..\..\Scripts\Set-IPAllocator.ps1 -Path ..\..\Scripts\SIS-DB-SN002-172.21.72.0_21.csv -HostName ($AzureVMName+"-BNic")
 
-            #$OptionalParameters['pIPAddress'] = "172.21.72.8"
-            #$OptionalParameters['sIPAddress'] = "172.21.72.9"
+            #$OptionalParameters['pIPAddress'] = "172.21.72.6"
+            #$OptionalParameters['sIPAddress'] = "172.21.72.7"
 
             #endregion
 
@@ -138,7 +141,7 @@ foreach($AzureVMName in $AzureVMNames){
                 }
             }
             else {
-                New-AzureRmResourceGroupDeployment -Name ((Get-AzureRmContext).Account.Id.Split("@")[0] + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmmss')) `
+                New-AzureRmResourceGroupDeployment -Name ((Get-AzureRmContext).Account.Id.Split("@")[0] + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
                                                    -ResourceGroupName $ResourceGroupName `
                                                    -TemplateFile $TemplateFile `
                                                    -TemplateParameterFile $TemplateParametersFile `
