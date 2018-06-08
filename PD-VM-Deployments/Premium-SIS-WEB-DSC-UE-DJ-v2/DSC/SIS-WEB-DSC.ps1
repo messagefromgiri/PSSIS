@@ -278,10 +278,16 @@ Node $nodeName
             $acctKey = ConvertTo-SecureString -String "pj+7mV4N0Wjufm4Vf/dBbaY0fHnXqh6IoWMgF4w75YwGKimYh4CUBvwdjjLqgRy1ZEcr7igleta3qy9WK+XOoQ==" -AsPlainText -Force
             $credential = New-Object System.Management.Automation.PSCredential -ArgumentList "Azure\sispd00sragrssa003", $acctKey
             New-PSDrive -Name Z -PSProvider FileSystem -Root "\\sispd00sragrssa003.file.core.windows.net\pssis" -Credential $credential -Persist
-			Start-Sleep -Seconds 10
-                    New-Item -Path D:\ -ItemType Directory -Name NEWRELIC -ErrorAction SilentlyContinue
+                    
+                if(Test-Path -Path D:\NEWRELIC\newrelic-infra.msi -ErrorAction SilentlyContinue){			        
 
-					Copy-Item -Path Z:\NEWRELIC\newrelic-infra.msi -Destination D:\NEWRELIC\newrelic-infra.msi -Force -Verbose
+                        New-Item -Path D:\ -ItemType Directory -Name NEWRELIC -ErrorAction SilentlyContinue
+
+					    Copy-Item -Path Z:\NEWRELIC\newrelic-infra.msi -Destination D:\NEWRELIC\newrelic-infra.msi -Force -Verbose
+                        
+                        Start-Sleep -Seconds 60
+                    }                   
+                    
 
                     msiexec /i D:\NEWRELIC\newrelic-infra.msi /L*v install.log /qn
                     
