@@ -230,7 +230,7 @@ Node $nodeName
 						$NIC.EnableStatic($ip, $subnet)
 						$NIC.SetDNSServerSearchOrder($dns)
 						$NIC.SetDynamicDNSRegistration("TRUE")
-
+						Rename-NetAdapter -Name $interfaceName -NewName "Backup"
 					}
 
 				}
@@ -279,7 +279,7 @@ Node $nodeName
             $credential = New-Object System.Management.Automation.PSCredential -ArgumentList "Azure\sispd00sragrssa003", $acctKey
             New-PSDrive -Name Z -PSProvider FileSystem -Root "\\sispd00sragrssa003.file.core.windows.net\pssis" -Credential $credential -Persist
                     
-                if(Test-Path -Path D:\NEWRELIC\newrelic-infra.msi -ErrorAction SilentlyContinue){			        
+                if(!(Test-Path -Path D:\NEWRELIC\newrelic-infra.msi -ErrorAction SilentlyContinue)){			        
 
                         New-Item -Path D:\ -ItemType Directory -Name NEWRELIC -ErrorAction SilentlyContinue
 
