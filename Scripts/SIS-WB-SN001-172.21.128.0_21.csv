@@ -1,4 +1,5 @@
 "IPAddress","Status","HostName"
+"172.21.128.4","Allocated","20SISP1STGW001-Nic"
 "172.21.128.5","Allocated","20SISP1APPW001-Nic"
 "172.21.128.6","Allocated","20SISP1APPW001-BNic"
 "172.21.128.7","Available",""
