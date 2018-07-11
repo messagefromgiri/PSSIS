@@ -274,32 +274,37 @@ Node $nodeName
 			if(Get-Service -Name newrelic-infra -ErrorAction Ignore){return $true}else{$false}
 		}
 		SetScript = {
-            $acctKey = ConvertTo-SecureString -String "pj+7mV4N0Wjufm4Vf/dBbaY0fHnXqh6IoWMgF4w75YwGKimYh4CUBvwdjjLqgRy1ZEcr7igleta3qy9WK+XOoQ==" -AsPlainText -Force
-            $credential = New-Object System.Management.Automation.PSCredential -ArgumentList "Azure\sispd00sragrssa003", $acctKey
-            New-PSDrive -Name Z -PSProvider FileSystem -Root "\\sispd00sragrssa003.file.core.windows.net\pssis" -Credential $credential -Persist
-                    
+            $acctKey = ConvertTo-SecureString -String "rLv9/xj+lecCIHZEqvntmhDqD8SOzOrvXWhcXUAi8pFNjNTwQJLJADw8YzqCwOJNUft5hYDVDdoqmZT7WqkjoA==" -AsPlainText -Force
+            $credential = New-Object System.Management.Automation.PSCredential -ArgumentList "Azure\sispd02sragrssa003", $acctKey
+            New-PSDrive -Name Z -PSProvider FileSystem -Root "\\sispd02sragrssa003.file.core.windows.net\pssis" -Credential $credential -Persist
+            #net use Z: \\sispd02sragrssa003.file.core.windows.net\pssis /u:AZURE\sispd02sragrssa003 rLv9/xj+lecCIHZEqvntmhDqD8SOzOrvXWhcXUAi8pFNjNTwQJLJADw8YzqCwOJNUft5hYDVDdoqmZT7WqkjoA==       
                 if(!(Test-Path -Path D:\NEWRELIC\newrelic-infra.msi -ErrorAction SilentlyContinue)){			        
 
                         New-Item -Path D:\ -ItemType Directory -Name NEWRELIC -ErrorAction SilentlyContinue
 
-					    Copy-Item -Path Z:\NEWRELIC\newrelic-infra.msi -Destination D:\NEWRELIC\newrelic-infra.msi -Force -Verbose
+					    Copy-Item -Path Z:\NEWRELIC\newrelic-infra.msi -Destination D:\NEWRELIC\newrelic-infra.msi -Force                     
                         
-                        Start-Sleep -Seconds 60
                     }                   
                     
+                    $MSIArguments = @(
+						"/i"
+						('"{0}"' -f 'D:\NEWRELIC\newrelic-infra.msi')
+						"/qn"
+						"/norestart"
+						"/L*v"
+						"install.log"
+					)
+					Start-Process "msiexec.exe" -ArgumentList $MSIArguments -Wait -NoNewWindow 
 
-                    msiexec /i D:\NEWRELIC\newrelic-infra.msi /L*v install.log /qn
-                    
-					Start-Sleep -Seconds 240
-			
+					#Start-Sleep -Seconds 240
+                    			
 					Rename-Item -Path 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.yml' -NewName 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.txt'
 					"license_key: aa3c1a32f97de2f370e8813575a5f660d2b3f26b" > 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.txt'
 					Rename-Item -NewName 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.yml' -Path 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.txt'														
-					Start-Service -Name newrelic-infra -ErrorAction Ignore
-            
-                 Remove-PSDrive -Name Z
+					Start-Service -Name newrelic-infra -ErrorAction Ignore            
+                
 		}
-		DependsOn = '[Script]DiskRenaming','[Script]SetCredSSP','[Script]AllowHTTPPort_80_7980','[Script]Allow_135_139_137_445'
+		DependsOn = '[Script]DiskRenaming'
 	}
 
   }
