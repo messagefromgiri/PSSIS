@@ -277,7 +277,8 @@ Node $nodeName
             $acctKey = ConvertTo-SecureString -String "rLv9/xj+lecCIHZEqvntmhDqD8SOzOrvXWhcXUAi8pFNjNTwQJLJADw8YzqCwOJNUft5hYDVDdoqmZT7WqkjoA==" -AsPlainText -Force
             $credential = New-Object System.Management.Automation.PSCredential -ArgumentList "Azure\sispd02sragrssa003", $acctKey
             New-PSDrive -Name Z -PSProvider FileSystem -Root "\\sispd02sragrssa003.file.core.windows.net\pssis" -Credential $credential -Persist
-            #net use Z: \\sispd02sragrssa003.file.core.windows.net\pssis /u:AZURE\sispd02sragrssa003 rLv9/xj+lecCIHZEqvntmhDqD8SOzOrvXWhcXUAi8pFNjNTwQJLJADw8YzqCwOJNUft5hYDVDdoqmZT7WqkjoA==       
+			Start-Sleep -Seconds 90
+			#net use Z: \\sispd02sragrssa003.file.core.windows.net\pssis /u:AZURE\sispd02sragrssa003 rLv9/xj+lecCIHZEqvntmhDqD8SOzOrvXWhcXUAi8pFNjNTwQJLJADw8YzqCwOJNUft5hYDVDdoqmZT7WqkjoA==       
                 if(!(Test-Path -Path D:\NEWRELIC\newrelic-infra.msi -ErrorAction SilentlyContinue)){			        
 
                         New-Item -Path D:\ -ItemType Directory -Name NEWRELIC -ErrorAction SilentlyContinue
@@ -294,7 +295,7 @@ Node $nodeName
 						"/L*v"
 						"install.log"
 					)
-					Start-Process "msiexec.exe" -ArgumentList $MSIArguments -Wait -NoNewWindow 
+					Start-Process "msiexec.exe" -ArgumentList $MSIArguments -Wait -NoNewWindow
 
 					#Start-Sleep -Seconds 240
                     			
