@@ -9,11 +9,13 @@ Param(
     $SubscriptionName = "PS-EXT-PD-02-SNGL",
     # Total No of Expected Machine in a Resource Group
     [Parameter(Mandatory = $true)]
-    [ValidateScript( {if ($_ -gt 50) {Throw "You are trying to deploy more than 10 Machines"; $false}else {
+    [ValidateScript( {if ($_ -gt 56) {Throw "You are trying to deploy more than 10 Machines"; $false}else {
                 $true
             }})]
     [Int]
-    $TotalOfMachines
+    $TotalOfMachines,
+    # Starting From Number
+    [int]$startingFromNumber = 1
 )
 Set-Location -Path $PSScriptRoot
 $greencolor = @{
@@ -31,7 +33,8 @@ Import-Module '..\Scripts\AzureImageFunctions.psm1'
 Get-AzureLoginCheck -Subscription $SubscriptionName
 Save-AzureRmContext -Path .\AzureProfile_Temp.json
 $numOfMachines = $TotalOfMachines
-for ($i = 1; $i -le $numOfMachines; $i++) {
+
+for ($i = $startingFromNumber; $i -le $numOfMachines; $i++) {
     $mName = if ($i -le 9) {($srvPatteren + "00" + $i)}elseif (($i -gt 9) -and ($i -lt 100)) {($srvPatteren + "0" + $i)}elseif ($i -gt 99) {($srvPatteren + $i)}
     Write-Host "Starting Deployment of....$mName" @greencolor
     $mrGP = ((Get-AzureRmResourceGroup).Resourcegroupname -match "-$Tier-")[0].ToString()
@@ -70,14 +73,16 @@ for ($i = 1; $i -le $numOfMachines; $i++) {
                 Write-Host $Error
             }
         } -ArgumentList $mName, $SubscriptionName, $Tier
+        
+        Start-Sleep -Seconds 30
     }
-    Start-Sleep -Seconds 3
+
     #Get-Job | Receive-Job
 }
 
 #Stopping Jobs Running more than 10 mins
 while ((Get-Job).count -ge 1) {
-    Get-Job | ForEach-Object {if (((get-date) - ($_).PSBeginTime).Minutes -gt 10) {$_ | Stop-Job; $_ | Remove-Job}else {$_|Receive-Job}}
+    Get-Job | ForEach-Object {if (((get-date) - ($_).PSBeginTime).Minutes -gt 3) {$_ | Stop-Job; $_ | Remove-Job}else {$_|Receive-Job}}
     Start-Sleep -Seconds 60
 }
 
