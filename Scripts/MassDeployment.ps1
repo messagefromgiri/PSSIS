@@ -5,8 +5,9 @@ Param(
     [string]
     $Tier,
     # Subscription
+    [Parameter(Mandatory = $true)]
     [string]
-    $SubscriptionName = "PS-EXT-PD-02-SNGL",
+    $SubscriptionName,
     # Total No of Expected Machine in a Resource Group
     [Parameter(Mandatory = $true)]
     [ValidateScript( {if ($_ -gt 56) {Throw "You are trying to deploy more than 10 Machines"; $false}else {
