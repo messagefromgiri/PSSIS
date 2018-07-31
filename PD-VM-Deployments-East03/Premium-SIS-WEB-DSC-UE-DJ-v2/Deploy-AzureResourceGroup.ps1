@@ -48,7 +48,7 @@ foreach ($AzureVMName in $AzureVMNames) {
     $OptionalParameters['resourceLocation'] = 'East US'
     $OptionalParameters['virtualNetworkResourceGroup'] = 'TIER-PD-NW-03-T0-RG001'
     $OptionalParameters['virtualNetworkName'] = 'PS-EXT-PD-SNGL-03-VN001'
-    $OptionalParameters['subnetName'] = "SIS-WB-SN001-172.22.128.0_22"
+    $OptionalParameters['subnetName'] = "SIS-WB-SN001-172.22.128.0_21"
     $OptionalParameters['domainToJoin'] = "powerschool.host"
     $OptionalParameters['domainUsername'] = "sundeep.paluru"
     ##Golden Image Value
@@ -57,8 +57,8 @@ foreach ($AzureVMName in $AzureVMNames) {
     $OptionalParameters['domainPassword'] = (Get-AzureKeyVaultSecret -VaultName 'PS-EXT-PD-SNGL-KV01' -Name 'ServiceAdminCred').SecretValue
     $OptionalParameters['adminPassword'] = (Get-AzureKeyVaultSecret -VaultName 'PS-EXT-PD-SNGL-KV01' -Name '00SISPDAPPWXXX').SecretValue
 
-    $OptionalParameters['pIPAddress'] = Powershell -file ..\..\Scripts\Set-IPAllocator.ps1 -Path ..\..\Scripts\SIS-WB-SN001-172.22.128.0_22.csv -HostName ($AzureVMName + "-Nic")
-    $OptionalParameters['sIPAddress'] = Powershell -file ..\..\Scripts\Set-IPAllocator.ps1 -Path ..\..\Scripts\SIS-WB-SN001-172.22.128.0_22.csv -HostName ($AzureVMName + "-BNic")
+    $OptionalParameters['pIPAddress'] = Powershell -file ..\..\Scripts\Set-IPAllocator.ps1 -Path ..\..\Scripts\SIS-WB-SN001-172.22.128.0_21.csv -HostName ($AzureVMName + "-Nic")
+    $OptionalParameters['sIPAddress'] = Powershell -file ..\..\Scripts\Set-IPAllocator.ps1 -Path ..\..\Scripts\SIS-WB-SN001-172.22.128.0_21.csv -HostName ($AzureVMName + "-BNic")
 
     #$OptionalParameters['pIPAddress'] = "172.21.96.7"
     #$OptionalParameters['sIPAddress'] = "172.21.96.8"
@@ -144,7 +144,7 @@ foreach ($AzureVMName in $AzureVMNames) {
         }
     }
     else {
-        New-AzureRmResourceGroupDeployment -Name ((Get-AzureRmContext).Account.Id.Split("@")[0] + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
+        New-AzureRmResourceGroupDeployment -Name ((Get-AzureRmContext).Account.Id.Split("@")[0] + '-' + (((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm') + (New-Guid).Guid.substring(0, 8))) `
             -ResourceGroupName $ResourceGroupName `
             -TemplateFile $TemplateFile `
             -TemplateParameterFile $TemplateParametersFile `
