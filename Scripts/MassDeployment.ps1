@@ -5,18 +5,18 @@ Param(
     [string]
     $Tier,
     # Subscription
-    [Parameter(Mandatory = $true)]
+    #[Parameter(Mandatory = $true)]
     [string]
-    $SubscriptionName,
+    $SubscriptionName = "PS-EXT-PD-03-SNGL",
     # Total No of Expected Machine in a Resource Group
     [Parameter(Mandatory = $true)]
-    [ValidateScript( {if ($_ -gt 56) {Throw "You are trying to deploy more than 10 Machines"; $false}else {
+    [ValidateScript( {if ($_ -gt 111) {Throw "You are trying to deploy more than 10 Machines"; $false}else {
                 $true
             }})]
     [Int]
     $TotalOfMachines,
     # Starting From Number
-    [int]$startingFromNumber = 1
+    [int]$startingFromNumber = 40
 )
 Set-Location -Path $PSScriptRoot
 $greencolor = @{
@@ -29,7 +29,7 @@ $yellowcolor = @{
 }
 Get-Job | ForEach-Object { if ($_.state -ne "Running") { $_ | Remove-Job } else { $_|Stop-Job; $_|Remove-Job}}
 $Error.Clear()
-if ($Tier -eq 'FE') {$srvPatteren = "02SISP1APPW"}elseif ($Tier -eq 'BE') {$srvPatteren = "02SISP1ODBW"}
+if ($Tier -eq 'FE') {$srvPatteren = "03SISP1APPW"}elseif ($Tier -eq 'BE') {$srvPatteren = "03SISP1ODBW"}
 Import-Module '..\Scripts\AzureImageFunctions.psm1'
 Get-AzureLoginCheck -Subscription $SubscriptionName
 Save-AzureRmContext -Path .\AzureProfile_Temp.json
@@ -55,13 +55,13 @@ for ($i = $startingFromNumber; $i -le $numOfMachines; $i++) {
                 if ($mOutput -eq $null) {
                     if ($args[2] -eq "BE") {
                         # DB Deployments
-                        Set-Location -Path 'D:\SIS-Repo\Powerschool%20SIS\PD-VM-Deployments-East02\Premium-SIS-DB-DSC-UE-DJ-v3.1'
+                        Set-Location -Path 'D:\SIS-Repo\Powerschool%20SIS\PD-VM-Deployments-East03\Premium-SIS-DB-DSC-UE-DJ-v3.1'
                         .\Deploy-AzureResourceGroup.ps1 -AzureVMNames $args[0]
                         Write-Host "Deploying BE ==>...$($args[0]) in the job" @yellowcolor
                     }
                     elseif ($args[2] -eq "FE") {
                         # Web Deployments
-                        Set-Location -Path 'D:\SIS-Repo\Powerschool%20SIS\PD-VM-Deployments-East02\Premium-SIS-WEB-DSC-UE-DJ-v2'
+                        Set-Location -Path 'D:\SIS-Repo\Powerschool%20SIS\PD-VM-Deployments-East03\Premium-SIS-WEB-DSC-UE-DJ-v2'
                         .\Deploy-AzureResourceGroup.ps1 -AzureVMNames $args[0]
                         Write-Host "Deploying FE ==>...$($args[0]) in the job" @yellowcolor
                     }
