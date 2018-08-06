@@ -291,6 +291,8 @@ Node $nodeName
                     }
 				} | Wait-Job
 					
+				Start-Sleep -Seconds 30
+				Remove-PSDrive -Name Z -Force -Verbose -ErrorAction SilentlyContinue
 						
 						$MSIArguments = @(
 							"/i"
