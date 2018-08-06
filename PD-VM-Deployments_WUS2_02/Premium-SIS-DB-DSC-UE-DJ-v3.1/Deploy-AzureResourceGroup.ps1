@@ -143,7 +143,7 @@ foreach ($AzureVMName in $AzureVMNames) {
         }
     }
     else {
-        New-AzureRmResourceGroupDeployment -Name ((Get-AzureRmContext).Account.Id.Split("@")[0] + '-' + ((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm')) `
+        New-AzureRmResourceGroupDeployment -Name ((Get-AzureRmContext).Account.Id.Split("@")[0] + '-' + (((Get-Date).ToUniversalTime()).ToString('MMdd-HHmm') + (New-Guid).Guid.substring(0, 8))) `
             -ResourceGroupName $ResourceGroupName `
             -TemplateFile $TemplateFile `
             -TemplateParameterFile $TemplateParametersFile `
