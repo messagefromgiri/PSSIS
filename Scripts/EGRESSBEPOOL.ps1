@@ -39,7 +39,7 @@ $NicList = $vmList | % { $_.NetworkProfile.NetworkInterfaces | ? {$_.primary -eq
 #Validate column names from CSV and update as necessary
 foreach ($nicname in $NicList) {
     $nic = Get-AzureRmNetworkInterface –name ($nicname.id).Substring(135) -resourcegroupname $feresourcegroup
-    if (!($nic.IpConfigurations|? {$_.Name -eq "Main-IP"}).LoadBalancerBackendAddressPools[0].ID -match $bepoolname) {
+    if (!(($nic.IpConfigurations|? {$_.Name -eq "Main-IP"}).LoadBalancerBackendAddressPools[0].ID -match $bepoolname)) {
         Write-Host "Adding ($nicname.id).Substring(135) to $bepoolname"
         $nic.IpConfigurations[0].LoadBalancerBackendAddressPools = $backend
         Set-AzureRmNetworkInterface -NetworkInterface $nic
