@@ -274,24 +274,23 @@ Node $nodeName
 			if(Get-Service -Name newrelic-infra -ErrorAction Ignore){return $true}else{$false}
 		}
 		SetScript = {
+				Start-Job -Name Drive -ScriptBlock {
+                    $acctKey = ConvertTo-SecureString -String "rLv9/xj+lecCIHZEqvntmhDqD8SOzOrvXWhcXUAi8pFNjNTwQJLJADw8YzqCwOJNUft5hYDVDdoqmZT7WqkjoA==" -AsPlainText -Force
+                    $credential = New-Object System.Management.Automation.PSCredential -ArgumentList "Azure\sispd02sragrssa003", $acctKey
+                    New-PSDrive -Name Z -PSProvider FileSystem -Root "\\sispd02sragrssa003.file.core.windows.net\pssis" -Credential $credential -Persist -ErrorAction SilentlyContinue
+                    Start-Sleep -Seconds 10
+                    if (!(Get-PSDrive -Name Z -ErrorAction SilentlyContinue)) {	
+                        net use Z: \\sispd02sragrssa003.file.core.windows.net\pssis /u:AZURE\sispd02sragrssa003 rLv9/xj+lecCIHZEqvntmhDqD8SOzOrvXWhcXUAi8pFNjNTwQJLJADw8YzqCwOJNUft5hYDVDdoqmZT7WqkjoA==
+                        Start-Sleep -Seconds 10
+                    }
+                    if (!(Test-Path -Path D:\NEWRELIC\newrelic-infra.msi -ErrorAction SilentlyContinue)) {			        
 
-				
-					$acctKey = ConvertTo-SecureString -String "rLv9/xj+lecCIHZEqvntmhDqD8SOzOrvXWhcXUAi8pFNjNTwQJLJADw8YzqCwOJNUft5hYDVDdoqmZT7WqkjoA==" -AsPlainText -Force
-					$credential = New-Object System.Management.Automation.PSCredential -ArgumentList "Azure\sispd02sragrssa003", $acctKey
-					New-PSDrive -Name Z -PSProvider FileSystem -Root "\\sispd02sragrssa003.file.core.windows.net\pssis" -Credential $credential -Persist
-					Start-Sleep -Seconds 150
-					if(!(Get-PSDrive -Name Z -ErrorAction SilentlyContinue))
-					{	
-						net use Z: \\sispd02sragrssa003.file.core.windows.net\pssis /u:AZURE\sispd02sragrssa003 rLv9/xj+lecCIHZEqvntmhDqD8SOzOrvXWhcXUAi8pFNjNTwQJLJADw8YzqCwOJNUft5hYDVDdoqmZT7WqkjoA==
-						Start-Sleep -Seconds 150
-					}
-					if(!(Test-Path -Path D:\NEWRELIC\newrelic-infra.msi -ErrorAction SilentlyContinue)){			        
+                        New-Item -Path D:\ -ItemType Directory -Name NEWRELIC -ErrorAction SilentlyContinue
 
-							New-Item -Path D:\ -ItemType Directory -Name NEWRELIC -ErrorAction SilentlyContinue
-
-							Copy-Item -Path Z:\NEWRELIC\newrelic-infra.msi -Destination D:\NEWRELIC\newrelic-infra.msi -Force                     
-							
-						}                   
+                        Copy-Item -Path Z:\NEWRELIC\newrelic-infra.msi -Destination D:\NEWRELIC\newrelic-infra.msi -Force							
+                    }
+				} | Wait-Job
+					
 						
 						$MSIArguments = @(
 							"/i"
@@ -303,12 +302,16 @@ Node $nodeName
 						)
 						Start-Process "msiexec.exe" -ArgumentList $MSIArguments -Wait -NoNewWindow
 
-						Start-Sleep -Seconds 240
-									
-						Rename-Item -Path 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.yml' -NewName 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.txt'
-						"license_key: aa3c1a32f97de2f370e8813575a5f660d2b3f26b" > 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.txt'
-						Rename-Item -NewName 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.yml' -Path 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.txt'														
-						Start-Service -Name newrelic-infra -ErrorAction Ignore
+						
+						
+						Start-Job -Name Rename -ScriptBlock {
+                    			Start-Sleep -Seconds 900
+								Rename-Item -Path 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.yml' -NewName 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.txt'
+                    			"license_key: aa3c1a32f97de2f370e8813575a5f660d2b3f26b" > 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.txt'
+                    			Rename-Item -NewName 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.yml' -Path 'C:\Program Files\New Relic\newrelic-infra\newrelic-infra.txt'														
+								Start-Service -Name newrelic-infra -ErrorAction Ignore                  		        
+						} -Verbose
+						
                 
 		}
 		DependsOn = '[Script]DiskRenaming'
