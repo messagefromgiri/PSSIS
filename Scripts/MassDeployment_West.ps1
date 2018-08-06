@@ -16,7 +16,7 @@ Param(
     [Int]
     $TotalOfMachines,
     # Starting From Number
-    [int]$startingFromNumber = 89
+    [int]$startingFromNumber = 1
 )
 Set-Location -Path $PSScriptRoot
 $greencolor = @{
@@ -78,7 +78,7 @@ for ($i = $startingFromNumber; $i -le $numOfMachines; $i++) {
                 Write-Host $Error
             }
         } -ArgumentList $mName, $SubscriptionName, $Tier, $folderPath
-        
+
         Start-Sleep -Seconds 30
     }
 
