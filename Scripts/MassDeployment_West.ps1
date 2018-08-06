@@ -59,13 +59,13 @@ for ($i = $startingFromNumber; $i -le $numOfMachines; $i++) {
                 if ($mOutput -eq $null) {
                     if ($args[2] -eq "BE") {
                         # DB Deployments
-                        Set-Location -Path "$folderPath\Premium-SIS-DB-DSC-UE-DJ-v3.1"
+                        Set-Location -Path ($args[3] + '\Premium-SIS-DB-DSC-UE-DJ-v3.1')
                         .\Deploy-AzureResourceGroup.ps1 -AzureVMNames $args[0]
                         Write-Host "Deploying BE ==>...$($args[0]) in the job" @yellowcolor
                     }
                     elseif ($args[2] -eq "FE") {
                         # Web Deployments
-                        Set-Location -Path "$folderPath\Premium-SIS-WEB-DSC-UE-DJ-v2"
+                        Set-Location -Path ($args[3] + '\Premium-SIS-WEB-DSC-UE-DJ-v2')
                         .\Deploy-AzureResourceGroup.ps1 -AzureVMNames $args[0]
                         Write-Host "Deploying FE ==>...$($args[0]) in the job" @yellowcolor
                     }
@@ -77,7 +77,7 @@ for ($i = $startingFromNumber; $i -le $numOfMachines; $i++) {
             catch {
                 Write-Host $Error
             }
-        } -ArgumentList $mName, $SubscriptionName, $Tier
+        } -ArgumentList $mName, $SubscriptionName, $Tier, $folderPath
         
         Start-Sleep -Seconds 30
     }
