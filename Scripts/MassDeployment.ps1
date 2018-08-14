@@ -7,7 +7,7 @@ Param(
     # Subscription
     #[Parameter(Mandatory = $true)]
     [string]
-    $SubscriptionName = "PS-EXT-PD-03-SNGL",
+    $SubscriptionName = "PS-EXT-PD-04-SNGL",
     # Total No of Expected Machine in a Resource Group
     [Parameter(Mandatory = $true)]
     [ValidateScript( {if ($_ -gt 111) {Throw "You are trying to deploy more than 10 Machines"; $false}else {
@@ -16,7 +16,7 @@ Param(
     [Int]
     $TotalOfMachines,
     # Starting From Number
-    [int]$startingFromNumber = 40
+    [int]$startingFromNumber = 1
 )
 Set-Location -Path $PSScriptRoot
 $greencolor = @{
@@ -29,11 +29,15 @@ $yellowcolor = @{
 }
 Get-Job | ForEach-Object { if ($_.state -ne "Running") { $_ | Remove-Job } else { $_|Stop-Job; $_|Remove-Job}}
 $Error.Clear()
-if ($Tier -eq 'FE') {$srvPatteren = "03SISP1APPW"}elseif ($Tier -eq 'BE') {$srvPatteren = "03SISP1ODBW"}
+if ($Tier -eq 'FE') {$srvPatteren = "04SISP1APPW"}elseif ($Tier -eq 'BE') {$srvPatteren = "04SISP1ODBW"}
 Import-Module '..\Scripts\AzureImageFunctions.psm1'
 Get-AzureLoginCheck -Subscription $SubscriptionName
 Save-AzureRmContext -Path .\AzureProfile_Temp.json
 $numOfMachines = $TotalOfMachines
+[System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
+$openFolderPath = New-Object System.Windows.Forms.FolderBrowserDialog
+$openFolderPath.ShowDialog()
+$folderPath = $openFolderPath.SelectedPath
 
 for ($i = $startingFromNumber; $i -le $numOfMachines; $i++) {
     $mName = if ($i -le 9) {($srvPatteren + "00" + $i)}elseif (($i -gt 9) -and ($i -lt 100)) {($srvPatteren + "0" + $i)}elseif ($i -gt 99) {($srvPatteren + $i)}
@@ -55,13 +59,13 @@ for ($i = $startingFromNumber; $i -le $numOfMachines; $i++) {
                 if ($mOutput -eq $null) {
                     if ($args[2] -eq "BE") {
                         # DB Deployments
-                        Set-Location -Path 'D:\SIS-Repo\Powerschool%20SIS\PD-VM-Deployments-East03\Premium-SIS-DB-DSC-UE-DJ-v3.1'
+                        Set-Location -Path ($args[3] + '\Premium-SIS-DB-DSC-UE-DJ-v3.1')
                         .\Deploy-AzureResourceGroup.ps1 -AzureVMNames $args[0]
                         Write-Host "Deploying BE ==>...$($args[0]) in the job" @yellowcolor
                     }
                     elseif ($args[2] -eq "FE") {
                         # Web Deployments
-                        Set-Location -Path 'D:\SIS-Repo\Powerschool%20SIS\PD-VM-Deployments-East03\Premium-SIS-WEB-DSC-UE-DJ-v2'
+                        Set-Location -Path ($args[3] + '\Premium-SIS-WEB-DSC-UE-DJ-v2')
                         .\Deploy-AzureResourceGroup.ps1 -AzureVMNames $args[0]
                         Write-Host "Deploying FE ==>...$($args[0]) in the job" @yellowcolor
                     }
@@ -73,7 +77,7 @@ for ($i = $startingFromNumber; $i -le $numOfMachines; $i++) {
             catch {
                 Write-Host $Error
             }
-        } -ArgumentList $mName, $SubscriptionName, $Tier
+        } -ArgumentList $mName, $SubscriptionName, $Tier, $folderPath
         
         Start-Sleep -Seconds 30
     }
