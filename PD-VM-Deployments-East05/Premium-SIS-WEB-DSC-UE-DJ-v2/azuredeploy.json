@@ -81,7 +81,7 @@
     },
     "resourceGroupName": {
       "type": "string",
-      "defaultValue": "SIS-PD-ST-04-FE-RG001"
+      "defaultValue": "SIS-PD-ST-05-FE-RG001"
     },
     "domainToJoin": {
       "type": "string",
